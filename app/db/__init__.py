@@ -1,5 +1,3 @@
-"""Пакет для работы с базой данных."""
-
 from app.db.database import db, Database
 from app.db.models import ScenarioStatus, Scenario, Base
 from app.db.crud import scenario_crud, ScenarioCRUD

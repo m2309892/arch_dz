@@ -1,5 +1,3 @@
-"""Подключение к базе данных PostgreSQL через SQLAlchemy."""
-
 import os
 from dotenv import load_dotenv
 
@@ -14,14 +12,12 @@ load_dotenv()
 
 
 class Database:
-    """Класс для управления подключением к базе данных через SQLAlchemy."""
     
     def __init__(self):
         self.engine: AsyncEngine | None = None
         self.session_maker: async_sessionmaker[AsyncSession] | None = None
     
     async def connect(self):
-        """Создает async engine и session maker."""
         database_url = os.getenv(
             "DATABASE_URL",
             "postgresql://postgres:postgres@localhost:5432/video_analytics"
@@ -53,20 +49,11 @@ class Database:
         print("Подключение к базе данных установлено")
     
     async def disconnect(self):
-        """Закрывает engine и все подключения."""
         if self.engine:
             await self.engine.dispose()
             print("Подключение к базе данных закрыто")
     
     def get_session(self) -> AsyncSession:
-        """
-        Получает сессию базы данных.
-        
-        Usage:
-            async with db.get_session() as session:
-                # работа с сессией
-                await session.commit()
-        """
         if not self.session_maker:
             raise RuntimeError("База данных не подключена. Вызовите db.connect()")
         
@@ -87,5 +74,4 @@ class Database:
             await conn.run_sync(Base.metadata.drop_all)
 
 
-# Глобальный экземпляр базы данных
 db = Database()

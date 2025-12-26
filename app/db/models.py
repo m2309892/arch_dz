@@ -1,5 +1,3 @@
-"""Модели SQLAlchemy для базы данных."""
-
 from enum import Enum
 from datetime import datetime
 from typing import Optional, Dict, Any
