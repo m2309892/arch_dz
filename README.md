@@ -25,6 +25,10 @@ psql -U postgres -d video_analytics -f app/db/migrations/001_create_scenarios_ta
 
 ```
 app/
+  api/                   # API роутеры
+    __init__.py
+    scenario.py          # Роутер для работы со сценариями
+    prediction.py        # Роутер для работы с предсказаниями
   db/
     __init__.py          # Экспорт основных компонентов
     models.py            # SQLAlchemy модели и enum типы
@@ -32,12 +36,17 @@ app/
     crud.py              # CRUD операции через ORM
     migrations/          # SQL миграции (legacy)
       001_create_scenarios_table.sql
+  schemas/               # Pydantic схемы
+    __init__.py
+    scenario.py          # Схемы для работы со сценариями
+  main.py                # Главный файл FastAPI приложения
 
 alembic/                 # Миграции Alembic
   versions/              # Файлы миграций
   env.py                 # Конфигурация Alembic
   script.py.mako         # Шаблон миграций
 alembic.ini              # Конфигурация Alembic
+run.py                   # Скрипт для запуска приложения
 ```
 
 ## Использование
@@ -141,8 +150,91 @@ alembic downgrade -1
 alembic history
 ```
 
+## Запуск API
+
+### Запуск сервера разработки
+```bash
+python run.py
+```
+
+Или через uvicorn напрямую:
+```bash
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+После запуска API будет доступно по адресу:
+- API: http://localhost:8000
+- Документация: http://localhost:8000/docs
+- Альтернативная документация: http://localhost:8000/redoc
+
+## API Эндпоинты
+
+### POST /scenario/
+Инициализация стейт-машины сценария.
+
+**Запрос:**
+```json
+{
+  "status": "init_startup"
+}
+```
+
+**Ответ:**
+```json
+{
+  "scenario_id": 1
+}
+```
+
+### POST /scenario/{scenario_id}/
+Изменение статуса стейт-машины сценария.
+
+**Запрос:**
+```json
+{
+  "status": "active"
+}
+```
+
+**Ответ:**
+```json
+{
+  "status": "updated",
+  "scenario_id": "1"
+}
+```
+
+### GET /scenario/{scenario_id}/
+Получение информации о текущем статусе сценария.
+
+**Ответ:**
+```json
+{
+  "id": 1,
+  "status": "active"
+}
+```
+
+### GET /prediction/{scenario_id}/
+Получение результатов предсказаний.
+
+**Ответ:**
+```json
+{
+  "scenario_id": 1,
+  "predictions": {
+    "predictions": [
+      {"class": "person", "confidence": 0.95}
+    ]
+  }
+}
+```
+
 ## Технологии
 
+- **FastAPI** - современный веб-фреймворк для создания API
 - **SQLAlchemy 2.0** - ORM для работы с базой данных
 - **asyncpg** - асинхронный драйвер PostgreSQL
 - **Alembic** - система миграций базы данных
+- **Pydantic** - валидация данных и схемы
+- **Uvicorn** - ASGI сервер
