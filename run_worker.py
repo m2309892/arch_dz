@@ -1,5 +1,3 @@
-"""Скрипт для запуска отдельного воркера (раннера)."""
-
 import asyncio
 import sys
 import logging
@@ -8,7 +6,6 @@ from pathlib import Path
 from app.runner.kafka_worker import KafkaWorker
 from app.runner.video_processor import DEFAULT_TEST_VIDEO_PATH
 
-# Настройка логирования
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
@@ -18,8 +15,6 @@ logger = logging.getLogger(__name__)
 
 
 async def main():
-    """Запуск воркера."""
-    # Получаем параметры из аргументов командной строки или используем значения по умолчанию
     worker_id = sys.argv[1] if len(sys.argv) > 1 else f"worker_{asyncio.get_event_loop().time()}"
     video_path = sys.argv[2] if len(sys.argv) > 2 else DEFAULT_TEST_VIDEO_PATH
     
@@ -41,4 +36,3 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
-

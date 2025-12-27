@@ -12,8 +12,6 @@ router = APIRouter(prefix="/prediction", tags=["prediction"])
     summary="Получение результатов предсказаний"
 )
 async def get_predictions(scenario_id: int) -> PredictionResponse:
-
-    # Проверяем существование сценария
     scenario = await scenario_crud.get_scenario(scenario_id=scenario_id)
     
     if not scenario:
@@ -22,11 +20,9 @@ async def get_predictions(scenario_id: int) -> PredictionResponse:
             detail=f"Сценарий с id={scenario_id} не найден"
         )
     
-    # Получаем предсказания
     predictions = await scenario_crud.get_predict(scenario_id=scenario_id)
     
     return PredictionResponse(
         scenario_id=scenario_id,
         predictions=predictions
     )
-
