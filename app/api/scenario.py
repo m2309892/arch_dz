@@ -8,9 +8,13 @@ from app.schemas.scenario import (
     ScenarioUpdate,
     ScenarioStatusResponse,
 )
-from app.db import scenario_crud, ScenarioStatus
+from app.orchestrator import Orchestrator
+from app.db import ScenarioStatus
 
 router = APIRouter(prefix="/scenario", tags=["scenario"])
+
+# Глобальный экземпляр оркестратора (будет инициализирован в main.py)
+orchestrator: Orchestrator = None
 
 
 @router.post(
@@ -23,11 +27,16 @@ async def create_scenario(scenario_data: ScenarioCreate) -> Dict[str, int]:
     """
     Инициализирует новый сценарий (стейт-машину).
     
-    Создает новый сценарий с указанным начальным статусом.
+    Создает новый сценарий с указанным начальным статусом через оркестратор.
     """
-    # TODO: Добавить логику оркестратора после его реализации
-    scenario_id = await scenario_crud.create_scenario(
-        status=scenario_data.status or ScenarioStatus.INIT_STARTUP
+    if orchestrator is None:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Оркестратор не инициализирован"
+        )
+    
+    scenario_id = await orchestrator.create_scenario(
+        status=scenario_data.status
     )
     return {"scenario_id": scenario_id}
 
@@ -44,12 +53,17 @@ async def update_scenario_status(
     """
     Изменяет статус стейт-машины сценария.
     
-    Обновляет текущий статус сценария на новый.
+    Обновляет текущий статус сценария на новый через оркестратор.
     """
-    # TODO: Добавить логику оркестратора после его реализации
-    success = await scenario_crud.update_status(
+    if orchestrator is None:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Оркестратор не инициализирован"
+        )
+    
+    success = await orchestrator.update_scenario_status(
         scenario_id=scenario_id,
-        status=scenario_update.status
+        new_status=scenario_update.status
     )
     
     if not success:
@@ -72,6 +86,8 @@ async def get_scenario_status(scenario_id: int) -> ScenarioStatusResponse:
     
     Возвращает текущий статус стейт-машины сценария.
     """
+    from app.db import scenario_crud
+    
     scenario = await scenario_crud.get_scenario(scenario_id=scenario_id)
     
     if not scenario:
@@ -84,4 +100,3 @@ async def get_scenario_status(scenario_id: int) -> ScenarioStatusResponse:
         id=scenario.id,
         status=scenario.status
     )
-

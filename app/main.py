@@ -2,19 +2,50 @@
 
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
+import logging
 
 from app.db.database import db
 from app.api import scenario, prediction
+from app.orchestrator import Orchestrator
+
+# Настройка логирования
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+
+logger = logging.getLogger(__name__)
+
+# Глобальный экземпляр оркестратора
+orchestrator: Orchestrator = None
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Управление жизненным циклом приложения."""
+    global orchestrator
+    
     # Startup
+    logger.info("Запуск приложения...")
     await db.connect()
+    
+    # Инициализируем оркестратор
+    orchestrator = Orchestrator(runner_pool_size=5)
+    await orchestrator.start()
+    
+    # Устанавливаем оркестратор в роутер
+    scenario.orchestrator = orchestrator
+    
+    logger.info("Приложение запущено")
+    
     yield
+    
     # Shutdown
+    logger.info("Остановка приложения...")
+    if orchestrator:
+        await orchestrator.stop()
     await db.disconnect()
+    logger.info("Приложение остановлено")
 
 
 app = FastAPI(
@@ -42,4 +73,3 @@ async def root():
 async def health_check():
     """Проверка здоровья приложения."""
     return {"status": "healthy"}
-
