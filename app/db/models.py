@@ -2,18 +2,16 @@ from enum import Enum
 from datetime import datetime
 from typing import Optional, Dict, Any
 
-from sqlalchemy import DateTime, JSON, Enum as SQLEnum, func, String, Integer
+from sqlalchemy import DateTime, JSON, func, String, Integer
+from sqlalchemy.dialects.postgresql import ENUM as PostgresEnum
 from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase
 
 
 class Base(DeclarativeBase):
-    """Базовый класс для всех моделей."""
     pass
 
 
 class ScenarioStatus(str, Enum):
-    """Статусы сценария."""
-    
     INIT_STARTUP = "init_startup"
     INIT_STARTUP_PROCESSING = "init_startup_processing"
     ACTIVE = "active"
@@ -22,18 +20,27 @@ class ScenarioStatus(str, Enum):
     INACTIVE = "inactive"
 
 
+
+
 class Scenario(Base):
-    """Модель сценария."""
-    
     __tablename__ = "scenarios"
     
     id: Mapped[int] = mapped_column(
         primary_key=True,
         autoincrement=True
     )
-    status: Mapped[ScenarioStatus] = mapped_column(
-        SQLEnum(ScenarioStatus, name="scenario_status"),
-        default=ScenarioStatus.INIT_STARTUP
+    status: Mapped[str] = mapped_column(
+        PostgresEnum(
+            'init_startup',
+            'init_startup_processing',
+            'active',
+            'init_shutdown',
+            'in_shutdown_processing',
+            'inactive',
+            name="scenario_status",
+            create_type=False
+        ),
+        default='init_startup'
     )
     predict: Mapped[Optional[Dict[str, Any]]] = mapped_column(
         JSON,
@@ -54,8 +61,6 @@ class Scenario(Base):
 
 
 class OutboxEvent(Base):
-    """Модель для transactional outbox паттерна."""
-    
     __tablename__ = "outbox_events"
     
     id: Mapped[int] = mapped_column(

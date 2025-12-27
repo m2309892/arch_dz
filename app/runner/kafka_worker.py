@@ -97,10 +97,15 @@ class KafkaWorker:
                 
                 try:
                     message_value = msg.value
+                    
+                    # Пропускаем служебные сообщения
+                    if message_value.get("type") == "__init__":
+                        continue
+                    
                     scenario_id = message_value.get("scenario_id")
                     
                     if not scenario_id:
-                        logger.warning(f"Сообщение без scenario_id пропущено")
+                        logger.warning(f"Сообщение без scenario_id пропущено: {message_value}")
                         continue
                     
                     logger.info(f"Worker {self.worker_id} получил задачу для scenario_id={scenario_id}")

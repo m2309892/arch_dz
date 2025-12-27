@@ -1,0 +1,70 @@
+2025-12-27 06:25:23,093 - __main__ - INFO - Запуск воркера: worker_id=runner_f7968f3ab1f0, video_path=test_videos\video_2025-12-27_04-47-07.mp4
+2025-12-27 06:25:23,093 - app.runner.video_processor - INFO - VideoProcessor инициализирован для файла: test_videos\video_2025-12-27_04-47-07.mp4
+2025-12-27 06:25:23,093 - app.runner.inference_client - INFO - InferenceClient инициализирован, URL: http://localhost:8001
+2025-12-27 06:25:23,093 - app.orchestrator.kafka_client - INFO - KafkaClient инициализирован, bootstrap_servers=None
+2025-12-27 06:25:23,093 - app.runner.runner - INFO - Runner инициализирован: runner_id=runner_f7968f3ab1f0, video_path=test_videos\video_2025-12-27_04-47-07.mp4
+2025-12-27 06:25:23,093 - app.orchestrator.kafka_client - INFO - KafkaClient инициализирован, bootstrap_servers=localhost:9092
+2025-12-27 06:25:23,094 - app.runner.kafka_worker - INFO - KafkaWorker инициализирован: worker_id=runner_f7968f3ab1f0
+2025-12-27 06:25:23,142 - app.orchestrator.kafka_client - INFO - Подключение к Kafka установлено
+2025-12-27 06:25:23,155 - app.orchestrator.kafka_client - INFO - Подключение к Kafka установлено
+2025-12-27 06:25:23,156 - app.runner.runner - INFO - Runner runner_f7968f3ab1f0 запущен
+2025-12-27 06:25:23,156 - app.runner.kafka_worker - INFO - Worker runner_f7968f3ab1f0 запущен
+2025-12-27 06:25:23,156 - aiokafka.consumer.subscription_state - INFO - Updating subscribed topics to: frozenset({'scenarios'})
+2025-12-27 06:25:23,188 - aiokafka.consumer.group_coordinator - INFO - Discovered coordinator 1 for group runners_group
+2025-12-27 06:25:23,188 - aiokafka.consumer.group_coordinator - INFO - Revoking previously assigned partitions set() for group runners_group
+2025-12-27 06:25:23,188 - aiokafka.consumer.group_coordinator - INFO - (Re-)joining group runners_group
+2025-12-27 06:25:26,318 - aiokafka.consumer.group_coordinator - INFO - Joined group 'runners_group' (generation 41) with member_id aiokafka-0.10.0-2727874d-c34a-4345-87b8-d9ac7264bff3
+2025-12-27 06:25:26,322 - aiokafka.consumer.group_coordinator - INFO - Successfully synced group runners_group with generation 41
+2025-12-27 06:25:26,323 - aiokafka.consumer.group_coordinator - INFO - Setting newly assigned partitions {TopicPartition(topic='scenarios', partition=0)} for group runners_group
+2025-12-27 06:25:26,323 - app.orchestrator.kafka_client - INFO - Consumer создан для топика 'scenarios', group_id='runners_group'
+2025-12-27 06:25:26,323 - app.runner.kafka_worker - INFO - Worker runner_f7968f3ab1f0 начал чтение из топика 'scenarios'
+2025-12-27 06:25:26,329 - app.runner.kafka_worker - INFO - Worker runner_f7968f3ab1f0 получил задачу для scenario_id=1
+2025-12-27 06:25:26,329 - app.runner.runner - INFO - Runner runner_f7968f3ab1f0 начинает обработку scenario_id=1
+2025-12-27 06:25:26,330 - app.runner.video_processor - INFO - Чтение кадра 0 из видео: test_videos\video_2025-12-27_04-47-07.mp4
+2025-12-27 06:25:26,330 - app.runner.runner - INFO - Кадр прочитан для scenario_id=1, размер: 10 байт
+2025-12-27 06:25:26,851 - httpx - INFO - HTTP Request: POST http://localhost:8001/predict "HTTP/1.1 200 OK"
+2025-12-27 06:25:26,851 - app.runner.inference_client - INFO - Получены предсказания от Inference: 3 объектов
+2025-12-27 06:25:26,851 - app.runner.runner - INFO - Получены предсказания от Inference для scenario_id=1
+2025-12-27 06:25:26,941 - app.runner.runner - INFO - Предсказания сохранены в БД для scenario_id=1
+2025-12-27 06:25:27,019 - app.runner.runner - INFO - Статус обновлен на ACTIVE для scenario_id=1
+2025-12-27 06:25:27,019 - app.runner.runner - INFO - Runner runner_f7968f3ab1f0 успешно обработал scenario_id=1
+2025-12-27 06:25:27,019 - app.runner.kafka_worker - INFO - Worker runner_f7968f3ab1f0 успешно обработал scenario_id=1
+2025-12-27 06:27:46,065 - aiokafka.consumer.group_coordinator - INFO - LeaveGroup request succeeded
+2025-12-27 06:27:46,068 - app.orchestrator.kafka_client - INFO - Отключение от Kafka завершено
+2025-12-27 06:27:46,068 - app.runner.runner - INFO - Runner runner_f7968f3ab1f0 остановлен
+2025-12-27 06:27:46,069 - app.orchestrator.kafka_client - INFO - Отключение от Kafka завершено
+2025-12-27 06:27:46,072 - app.runner.kafka_worker - INFO - Worker runner_f7968f3ab1f0 остановлен
+Подключение к базе данных установлено
+Подключение к базе данных закрыто
+Traceback (most recent call last):
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\asyncio\base_events.py", line 685, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "C:\Users\ноут\Desktop\arch_dz\run_worker.py", line 35, in main
+    await worker.run()
+  File "C:\Users\ноут\Desktop\arch_dz\app\runner\kafka_worker.py", line 94, in run
+    async for msg in consumer:
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\site-packages\aiokafka\consumer\consumer.py", line 1268, in __anext__
+    return (await self.getone())
+            ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\site-packages\aiokafka\consumer\consumer.py", line 1154, in getone
+    msg = await self._fetcher.next_record(partitions)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\site-packages\aiokafka\consumer\fetcher.py", line 1041, in next_record
+    await waiter
+asyncio.exceptions.CancelledError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\ноут\Desktop\arch_dz\run_worker.py", line 43, in <module>
+    asyncio.run(main())
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py", line 194, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py", line 123, in run
+    raise KeyboardInterrupt()
+KeyboardInterrupt

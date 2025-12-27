@@ -1,15 +1,15 @@
-"""Заглушка для Inference сервиса."""
+"""Клиент для работы с Inference сервисом."""
 
 import logging
-from typing import Dict, Any, Optional
-import base64
+import httpx
+from typing import Dict, Any
 import io
 
 logger = logging.getLogger(__name__)
 
 
 class InferenceClient:
-    """Заглушка для работы с Inference сервисом."""
+    """Клиент для работы с Inference сервисом."""
     
     def __init__(self, inference_url: str = "http://localhost:8001"):
         """
@@ -19,40 +19,48 @@ class InferenceClient:
             inference_url: URL Inference сервиса
         """
         self.inference_url = inference_url
-        logger.info(f"InferenceClient инициализирован (заглушка), URL: {inference_url}")
+        self.predict_endpoint = f"{inference_url}/predict"
+        logger.info(f"InferenceClient инициализирован, URL: {inference_url}")
     
     async def predict(self, frame: bytes) -> Dict[str, Any]:
         """
-        Отправляет кадр в Inference сервис и получает предсказания (заглушка).
+        Отправляет кадр в Inference сервис и получает предсказания.
         
         Args:
             frame: Байты кадра (изображение)
         
         Returns:
             Словарь с предсказаниями
+        
+        Raises:
+            Exception: При ошибке обращения к Inference сервису
         """
-        # TODO: В реальной реализации здесь будет HTTP запрос к Inference сервису
-        # Пока возвращаем заглушку с предсказаниями
-        
-        logger.info(f"[INFERENCE STUB] Получен кадр размером {len(frame)} байт")
-        
-        # Заглушка предсказаний
-        predictions = {
-            "predictions": [
-                {
-                    "class": "person",
-                    "confidence": 0.95,
-                    "bbox": [100, 100, 200, 300]
-                },
-                {
-                    "class": "car",
-                    "confidence": 0.87,
-                    "bbox": [300, 150, 450, 350]
-                }
-            ],
-            "timestamp": "2024-01-01T12:00:00"
-        }
-        
-        logger.info(f"[INFERENCE STUB] Возвращены предсказания: {len(predictions['predictions'])} объектов")
-        return predictions
-
+        try:
+            async with httpx.AsyncClient(timeout=30.0) as client:
+                # Отправляем кадр как файл
+                files = {"frame": ("frame.jpg", io.BytesIO(frame), "image/jpeg")}
+                
+                response = await client.post(
+                    self.predict_endpoint,
+                    files=files
+                )
+                
+                response.raise_for_status()
+                
+                result = response.json()
+                logger.info(
+                    f"Получены предсказания от Inference: "
+                    f"{len(result.get('predictions', []))} объектов"
+                )
+                
+                return result
+                
+        except httpx.HTTPStatusError as e:
+            logger.error(f"HTTP ошибка при обращении к Inference: {e.response.status_code} - {e.response.text}")
+            raise Exception(f"Inference сервис вернул ошибку: {e.response.status_code}")
+        except httpx.TimeoutException:
+            logger.error("Таймаут при обращении к Inference сервису")
+            raise Exception("Таймаут при обращении к Inference сервису")
+        except Exception as e:
+            logger.error(f"Ошибка при обращении к Inference сервису: {e}", exc_info=True)
+            raise Exception(f"Ошибка при обращении к Inference сервису: {str(e)}")

@@ -15,8 +15,9 @@ class ScenarioCRUD:
         predict: Optional[Dict[str, Any]] = None
     ) -> int:
         async with db.get_session() as session:
+            status_value = status.value if isinstance(status, ScenarioStatus) else status
             new_scenario = Scenario(
-                status=status,
+                status=status_value,
                 predict=predict
             )
             session.add(new_scenario)
@@ -28,10 +29,11 @@ class ScenarioCRUD:
     @staticmethod
     async def update_status(scenario_id: int, status: ScenarioStatus) -> bool:
         async with db.get_session() as session:
+            status_value = status.value if isinstance(status, ScenarioStatus) else status
             stmt = (
                 update(Scenario)
                 .where(Scenario.id == scenario_id)
-                .values(status=status)
+                .values(status=status_value)
             )
             result = await session.execute(stmt)
             await session.commit()
@@ -43,7 +45,9 @@ class ScenarioCRUD:
             stmt = select(Scenario.status).where(Scenario.id == scenario_id)
             result = await session.execute(stmt)
             status_value = result.scalar_one_or_none()
-            return status_value
+            if status_value:
+                return ScenarioStatus(status_value)
+            return None
     
     @staticmethod
     async def get_predict(scenario_id: int) -> Optional[Dict[str, Any]]:

@@ -36,10 +36,18 @@ def upgrade() -> None:
     """)
     
     # Создание таблицы scenarios
+    # Используем postgresql.ENUM с create_type=False, т.к. тип уже создан выше
+    scenario_status_enum = postgresql.ENUM(
+        'init_startup', 'init_startup_processing', 'active', 
+        'init_shutdown', 'in_shutdown_processing', 'inactive',
+        name='scenario_status',
+        create_type=False  # Тип уже создан выше, не создавать заново
+    )
+    
     op.create_table(
         'scenarios',
         sa.Column('id', sa.Integer(), autoincrement=True, nullable=False, primary_key=True),
-        sa.Column('status', sa.Enum('init_startup', 'init_startup_processing', 'active', 'init_shutdown', 'in_shutdown_processing', 'inactive', name='scenario_status'), nullable=False, server_default='init_startup'),
+        sa.Column('status', scenario_status_enum, nullable=False, server_default='init_startup'),
         sa.Column('predict', postgresql.JSON(astext_type=sa.Text()), nullable=True),
         sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
         sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),

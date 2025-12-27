@@ -17,14 +17,15 @@ logger = logging.getLogger(__name__)
 class Orchestrator:
     """Оркестратор для управления сценариями и раннерами."""
     
-    def __init__(self, runner_pool_size: int = 5):
+    def __init__(self, runner_pool_size: int = 5, video_path: Optional[str] = None):
         """
         Инициализация оркестратора.
         
         Args:
             runner_pool_size: Размер пула раннеров (количество воркеров)
+            video_path: Путь к видеофайлу для раннеров (опционально)
         """
-        self.runner_pool = RunnerPool(pool_size=runner_pool_size)
+        self.runner_pool = RunnerPool(pool_size=runner_pool_size, video_path=video_path)
         self.outbox_manager = OutboxManager()
         self.kafka_client = KafkaClient()
         
@@ -69,14 +70,34 @@ class Orchestrator:
         if not self._running:
             return
         
+        logger.info("Начало остановки оркестратора...")
         self._running = False
-        await self.kafka_client.disconnect()
         
-        # Ждем завершения потоков
-        if self._event_processor_thread:
+        # Сначала останавливаем Kafka клиент
+        try:
+            await self.kafka_client.disconnect()
+        except Exception as e:
+            logger.error(f"Ошибка при отключении Kafka клиента: {e}", exc_info=True)
+        
+        # Останавливаем все раннеры
+        try:
+            self.runner_pool.stop_all_runners()
+        except Exception as e:
+            logger.error(f"Ошибка при остановке раннеров: {e}", exc_info=True)
+        
+        # Ждем завершения потоков (они должны остановиться сами, когда _running = False)
+        if self._event_processor_thread and self._event_processor_thread.is_alive():
             self._event_processor_thread.join(timeout=5)
-        if self._retry_consumer_thread:
+            if self._event_processor_thread.is_alive():
+                logger.warning("Поток обработки событий не остановился за 5 секунд")
+        
+        if self._retry_consumer_thread and self._retry_consumer_thread.is_alive():
             self._retry_consumer_thread.join(timeout=5)
+            if self._retry_consumer_thread.is_alive():
+                logger.warning("Поток retry consumer не остановился за 5 секунд")
+        
+        # Небольшая задержка, чтобы дать время всем операциям завершиться
+        await asyncio.sleep(0.5)
         
         logger.info("Оркестратор остановлен")
     
@@ -163,36 +184,55 @@ class Orchestrator:
     def _run_event_processor(self):
         """Первый поток: обработка событий от API."""
         logger.info("Поток обработки событий запущен")
-        
+
         # Создаем новый event loop для этого потока
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-        
+
         try:
+            logger.info("Запуск event loop в потоке обработки событий")
             loop.run_until_complete(self._event_processor_loop())
+            logger.info("Event loop завершился нормально")
         except Exception as e:
             logger.error(f"Ошибка в потоке обработки событий: {e}", exc_info=True)
         finally:
-            loop.close()
+            try:
+                loop.close()
+                logger.info("Event loop закрыт")
+            except Exception as e:
+                logger.error(f"Ошибка при закрытии event loop: {e}", exc_info=True)
     
     async def _event_processor_loop(self):
         """Основной цикл обработки событий."""
-        while self._running:
-            try:
-                # Обрабатываем события из очереди
+        logger.info("Цикл обработки событий начал работу")
+        iteration = 0
+        try:
+            while self._running:
                 try:
-                    event = self._event_queue.get_nowait()
-                    await self._process_event(event)
-                except:
-                    pass  # Очередь пуста
-                
-                # Обрабатываем события из outbox и отправляем в Kafka
-                await self._process_outbox_events()
-                
-                await asyncio.sleep(0.5)  # Небольшая задержка между итерациями
-            except Exception as e:
-                logger.error(f"Ошибка в цикле обработки событий: {e}", exc_info=True)
-                await asyncio.sleep(1)
+                    iteration += 1
+                    if iteration == 1 or iteration % 100 == 0:  # Логируем первую и каждую 100-ю итерацию
+                        logger.info(f"Цикл обработки событий работает, итерация {iteration}, _running={self._running}")
+                    
+                    # Обрабатываем события из очереди
+                    try:
+                        event = self._event_queue.get_nowait()
+                        logger.info(f"Получено событие из очереди: {event}")
+                        await self._process_event(event)
+                    except:
+                        pass  # Очередь пуста
+                    
+                    # Обрабатываем события из outbox и отправляем в Kafka
+                    await self._process_outbox_events()
+                    
+                    await asyncio.sleep(0.1)  # Небольшая задержка между итерациями (уменьшено для более быстрой обработки)
+                except asyncio.CancelledError:
+                    logger.info("Цикл обработки событий отменен")
+                    break
+                except Exception as e:
+                    logger.error(f"Ошибка в цикле обработки событий: {e}", exc_info=True)
+                    await asyncio.sleep(1)
+        finally:
+            logger.info(f"Цикл обработки событий завершен, всего итераций: {iteration}")
     
     async def _process_event(self, event: dict):
         """Обрабатывает одно событие."""
@@ -210,23 +250,42 @@ class Orchestrator:
     
     async def _process_outbox_events(self):
         """Обрабатывает события из outbox и отправляет в Kafka."""
-        events = await self.outbox_manager.get_unprocessed_events(limit=10)
-        
-        for event in events:
-            try:
-                # Отправляем в Kafka
-                success = await self.kafka_client.send_message(
-                    topic=event.topic,
-                    key=str(event.scenario_id),
-                    value=event.event_data
-                )
-                
-                if success:
-                    # Помечаем как обработанное
-                    await self.outbox_manager.mark_as_processed(event.id)
-                    logger.info(f"Событие отправлено в Kafka: event_id={event.id}")
-            except Exception as e:
-                logger.error(f"Ошибка при обработке события из outbox: {e}", exc_info=True)
+        try:
+            events = await self.outbox_manager.get_unprocessed_events(limit=10)
+            
+            if events:
+                logger.info(f"Найдено {len(events)} необработанных событий в outbox")
+            
+            for event in events:
+                try:
+                    logger.info(f"Обработка события из outbox: event_id={event.id}, scenario_id={event.scenario_id}, type={event.event_type}, topic={event.topic}")
+                    
+                    # Проверяем, что Kafka клиент подключен
+                    if not self.kafka_client.connected:
+                        logger.warning(f"Kafka клиент не подключен, пропускаем событие event_id={event.id}")
+                        continue
+                    
+                    logger.info(f"Попытка отправить событие в Kafka: event_id={event.id}, topic={event.topic}, key={event.scenario_id}")
+                    
+                    # Отправляем в Kafka
+                    success = await self.kafka_client.send_message(
+                        topic=event.topic,
+                        key=str(event.scenario_id),
+                        value=event.event_data
+                    )
+                    
+                    logger.info(f"Результат отправки события event_id={event.id}: success={success}")
+                    
+                    if success:
+                        # Помечаем как обработанное
+                        await self.outbox_manager.mark_as_processed(event.id)
+                        logger.info(f"✓ Событие отправлено в Kafka и помечено как обработанное: event_id={event.id}, scenario_id={event.scenario_id}")
+                    else:
+                        logger.warning(f"✗ Не удалось отправить событие в Kafka: event_id={event.id}")
+                except Exception as e:
+                    logger.error(f"Ошибка при обработке события из outbox event_id={event.id}: {e}", exc_info=True)
+        except Exception as e:
+            logger.error(f"Ошибка при получении событий из outbox: {e}", exc_info=True)
     
     def _run_retry_consumer(self):
         """Второй поток: чтение retry топика из Kafka."""
@@ -247,31 +306,66 @@ class Orchestrator:
         """Основной цикл чтения retry топика."""
         consumer = None
         stop_event = asyncio.Event()
+        max_retries = 5
+        retry_delay = 2  # секунды
+        
+        # Пытаемся создать consumer с повторными попытками
+        for attempt in range(max_retries):
+            try:
+                # Создаем consumer для retry топика
+                consumer = await self.kafka_client.create_consumer(
+                    topic=self.kafka_client.retry_topic,
+                    group_id="orchestrator_retry_consumer"
+                )
+                
+                logger.info(f"Начато чтение из retry топика: {self.kafka_client.retry_topic}")
+                break  # Успешно создали consumer
+            except Exception as e:
+                if attempt < max_retries - 1:
+                    logger.warning(
+                        f"Ошибка при создании consumer для retry топика (попытка {attempt + 1}/{max_retries}): {e}. "
+                        f"Повторная попытка через {retry_delay} секунд..."
+                    )
+                    await asyncio.sleep(retry_delay)
+                else:
+                    logger.error(f"Не удалось создать consumer для retry топика после {max_retries} попыток: {e}")
+                    return
+        
+        if not consumer:
+            logger.error("Consumer не создан, выходим из retry consumer loop")
+            return
         
         try:
-            # Создаем consumer для retry топика
-            consumer = await self.kafka_client.create_consumer(
-                topic=self.kafka_client.retry_topic,
-                group_id="orchestrator_retry_consumer"
-            )
-            
-            logger.info(f"Начато чтение из retry топика: {self.kafka_client.retry_topic}")
-            
             # Читаем сообщения из retry топика
             async for msg in consumer:
                 if not self._running:
+                    logger.info("Получен сигнал остановки, завершаем чтение retry топика")
                     break
                 
                 try:
                     message_value = msg.value
+                    # message_value уже является словарем благодаря value_deserializer
+                    if not isinstance(message_value, dict):
+                        logger.error(f"Неверный формат сообщения из retry топика: {type(message_value)}")
+                        continue
+                    
                     await self._handle_retry_message(message_value)
+                except asyncio.CancelledError:
+                    logger.info("Обработка сообщения отменена")
+                    break
                 except Exception as e:
                     logger.error(f"Ошибка при обработке сообщения из retry топика: {e}", exc_info=True)
+        except asyncio.CancelledError:
+            logger.info("Цикл чтения retry топика отменен")
         except Exception as e:
             logger.error(f"Ошибка в цикле чтения retry топика: {e}", exc_info=True)
         finally:
             if consumer:
-                await consumer.stop()
+                try:
+                    await consumer.stop()
+                    logger.info("Consumer для retry топика остановлен")
+                except Exception as e:
+                    logger.error(f"Ошибка при остановке consumer: {e}", exc_info=True)
     
     async def _handle_retry_message(self, message: dict):
         """

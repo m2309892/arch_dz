@@ -96,7 +96,9 @@ async def get_scenario_status(scenario_id: int) -> ScenarioStatusResponse:
             detail=f"Сценарий с id={scenario_id} не найден"
         )
     
+    # Преобразуем строку из БД в enum для ответа
+    status_enum = ScenarioStatus(scenario.status) if isinstance(scenario.status, str) else scenario.status
     return ScenarioStatusResponse(
         id=scenario.id,
-        status=scenario.status
+        status=status_enum
     )

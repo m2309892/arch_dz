@@ -1,4 +1,5 @@
 import os
+import asyncio
 from dotenv import load_dotenv
 
 from sqlalchemy.ext.asyncio import (
@@ -7,6 +8,7 @@ from sqlalchemy.ext.asyncio import (
     async_sessionmaker,
     AsyncEngine
 )
+from sqlalchemy.pool import NullPool
 
 load_dotenv()
 
@@ -23,7 +25,6 @@ class Database:
             "postgresql://postgres:postgres@localhost:5432/video_analytics"
         )
         
-        # Преобразуем postgresql:// в postgresql+asyncpg:// для async
         if database_url.startswith("postgresql://"):
             database_url = database_url.replace(
                 "postgresql://",
@@ -34,9 +35,7 @@ class Database:
         self.engine = create_async_engine(
             database_url,
             echo=False,
-            pool_size=5,
-            max_overflow=20,
-            pool_pre_ping=True,
+            poolclass=NullPool,
         )
         
         self.session_maker = async_sessionmaker(
@@ -50,8 +49,15 @@ class Database:
     
     async def disconnect(self):
         if self.engine:
-            await self.engine.dispose()
-            print("Подключение к базе данных закрыто")
+            try:
+                await self.engine.dispose(close=True)
+                print("Подключение к базе данных закрыто")
+            except Exception as e:
+                print(f"Ошибка при закрытии соединения с БД: {e}")
+                try:
+                    await self.engine.dispose()
+                except:
+                    pass
     
     def get_session(self) -> AsyncSession:
         if not self.session_maker:
@@ -60,14 +66,12 @@ class Database:
         return self.session_maker()
     
     async def create_tables(self):
-        """Создает все таблицы в базе данных."""
         from app.db.models import Base
         
         async with self.engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
     
     async def drop_tables(self):
-        """Удаляет все таблицы из базы данных."""
         from app.db.models import Base
         
         async with self.engine.begin() as conn:

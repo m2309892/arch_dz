@@ -133,9 +133,14 @@ class Runner:
         try:
             # Получаем информацию о сценарии для retry
             scenario = await scenario_crud.get_scenario(scenario_id)
+            # status теперь строка, не enum
+            status_value = scenario.status if scenario else "unknown"
+            # Если это enum, берем его значение
+            if hasattr(status_value, 'value'):
+                status_value = status_value.value
             event_data = {
                 "scenario_id": scenario_id,
-                "status": scenario.status.value if scenario else "unknown",
+                "status": status_value,
                 "reason": reason,
                 "runner_id": self.runner_id
             }

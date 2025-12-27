@@ -1,0 +1,59 @@
+2025-12-27 06:33:31,772 - __main__ - INFO - Запуск воркера: worker_id=runner_6a52af838ae3, video_path=test_videos\video_2025-12-27_04-47-07.mp4
+2025-12-27 06:33:31,772 - app.runner.video_processor - INFO - VideoProcessor инициализирован для файла: test_videos\video_2025-12-27_04-47-07.mp4
+2025-12-27 06:33:31,774 - app.runner.inference_client - INFO - InferenceClient инициализирован, URL: http://localhost:8001
+2025-12-27 06:33:31,774 - app.orchestrator.kafka_client - INFO - KafkaClient инициализирован, bootstrap_servers=None
+2025-12-27 06:33:31,774 - app.runner.runner - INFO - Runner инициализирован: runner_id=runner_6a52af838ae3, video_path=test_videos\video_2025-12-27_04-47-07.mp4
+2025-12-27 06:33:31,774 - app.orchestrator.kafka_client - INFO - KafkaClient инициализирован, bootstrap_servers=localhost:9092
+2025-12-27 06:33:31,774 - app.runner.kafka_worker - INFO - KafkaWorker инициализирован: worker_id=runner_6a52af838ae3
+2025-12-27 06:33:31,902 - app.orchestrator.kafka_client - INFO - Подключение к Kafka установлено
+2025-12-27 06:33:31,942 - app.orchestrator.kafka_client - INFO - Подключение к Kafka установлено
+2025-12-27 06:33:31,942 - app.runner.runner - INFO - Runner runner_6a52af838ae3 запущен
+2025-12-27 06:33:31,942 - app.runner.kafka_worker - INFO - Worker runner_6a52af838ae3 запущен
+2025-12-27 06:33:31,942 - aiokafka.consumer.subscription_state - INFO - Updating subscribed topics to: frozenset({'scenarios'})
+2025-12-27 06:33:32,007 - aiokafka.consumer.group_coordinator - INFO - Discovered coordinator 1 for group runners_group
+2025-12-27 06:33:32,008 - aiokafka.consumer.group_coordinator - INFO - Revoking previously assigned partitions set() for group runners_group
+2025-12-27 06:33:32,008 - aiokafka.consumer.group_coordinator - INFO - (Re-)joining group runners_group
+2025-12-27 06:33:35,128 - aiokafka.consumer.group_coordinator - INFO - Joined group 'runners_group' (generation 46) with member_id aiokafka-0.10.0-7517a5a5-72cd-432e-b71a-d4df7e099293
+2025-12-27 06:33:35,133 - aiokafka.consumer.group_coordinator - INFO - Successfully synced group runners_group with generation 46
+2025-12-27 06:33:35,133 - aiokafka.consumer.group_coordinator - INFO - Setting newly assigned partitions set() for group runners_group
+2025-12-27 06:33:35,133 - app.orchestrator.kafka_client - INFO - Consumer создан для топика 'scenarios', group_id='runners_group'
+2025-12-27 06:33:35,134 - app.runner.kafka_worker - INFO - Worker runner_6a52af838ae3 начал чтение из топика 'scenarios'
+2025-12-27 06:37:16,712 - aiokafka.consumer.group_coordinator - INFO - LeaveGroup request succeeded
+2025-12-27 06:37:16,715 - app.orchestrator.kafka_client - INFO - Отключение от Kafka завершено
+2025-12-27 06:37:16,716 - app.runner.runner - INFO - Runner runner_6a52af838ae3 остановлен
+2025-12-27 06:37:16,717 - app.orchestrator.kafka_client - INFO - Отключение от Kafka завершено
+2025-12-27 06:37:16,718 - app.runner.kafka_worker - INFO - Worker runner_6a52af838ae3 остановлен
+Подключение к базе данных установлено
+Подключение к базе данных закрыто
+Traceback (most recent call last):
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\asyncio\base_events.py", line 685, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "C:\Users\ноут\Desktop\arch_dz\run_worker.py", line 35, in main
+    await worker.run()
+  File "C:\Users\ноут\Desktop\arch_dz\app\runner\kafka_worker.py", line 94, in run
+    async for msg in consumer:
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\site-packages\aiokafka\consumer\consumer.py", line 1268, in __anext__
+    return (await self.getone())
+            ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\site-packages\aiokafka\consumer\consumer.py", line 1154, in getone
+    msg = await self._fetcher.next_record(partitions)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\site-packages\aiokafka\consumer\fetcher.py", line 1041, in next_record
+    await waiter
+asyncio.exceptions.CancelledError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\ноут\Desktop\arch_dz\run_worker.py", line 43, in <module>
+    asyncio.run(main())
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py", line 194, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py", line 123, in run
+    raise KeyboardInterrupt()
+KeyboardInterrupt

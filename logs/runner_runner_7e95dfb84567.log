@@ -1,0 +1,164 @@
+2025-12-27 06:30:18,685 - __main__ - INFO - Запуск воркера: worker_id=runner_7e95dfb84567, video_path=test_videos\video_2025-12-27_04-47-07.mp4
+2025-12-27 06:30:18,685 - app.runner.video_processor - INFO - VideoProcessor инициализирован для файла: test_videos\video_2025-12-27_04-47-07.mp4
+2025-12-27 06:30:18,686 - app.runner.inference_client - INFO - InferenceClient инициализирован, URL: http://localhost:8001
+2025-12-27 06:30:18,686 - app.orchestrator.kafka_client - INFO - KafkaClient инициализирован, bootstrap_servers=None
+2025-12-27 06:30:18,686 - app.runner.runner - INFO - Runner инициализирован: runner_id=runner_7e95dfb84567, video_path=test_videos\video_2025-12-27_04-47-07.mp4
+2025-12-27 06:30:18,686 - app.orchestrator.kafka_client - INFO - KafkaClient инициализирован, bootstrap_servers=localhost:9092
+2025-12-27 06:30:18,686 - app.runner.kafka_worker - INFO - KafkaWorker инициализирован: worker_id=runner_7e95dfb84567
+2025-12-27 06:30:18,838 - app.orchestrator.kafka_client - INFO - Подключение к Kafka установлено
+2025-12-27 06:30:18,894 - app.orchestrator.kafka_client - INFO - Подключение к Kafka установлено
+2025-12-27 06:30:18,894 - app.runner.runner - INFO - Runner runner_7e95dfb84567 запущен
+2025-12-27 06:30:18,894 - app.runner.kafka_worker - INFO - Worker runner_7e95dfb84567 запущен
+2025-12-27 06:30:18,895 - aiokafka.consumer.subscription_state - INFO - Updating subscribed topics to: frozenset({'scenarios'})
+2025-12-27 06:30:18,969 - aiokafka.consumer.group_coordinator - INFO - Discovered coordinator 1 for group runners_group
+2025-12-27 06:30:18,970 - aiokafka.consumer.group_coordinator - INFO - Revoking previously assigned partitions set() for group runners_group
+2025-12-27 06:30:18,970 - aiokafka.consumer.group_coordinator - INFO - (Re-)joining group runners_group
+2025-12-27 06:30:22,082 - aiokafka.consumer.group_coordinator - INFO - Joined group 'runners_group' (generation 43) with member_id aiokafka-0.10.0-93debcc6-6403-434e-85b4-c2aa2c831d8b
+2025-12-27 06:30:22,087 - aiokafka.consumer.group_coordinator - INFO - Successfully synced group runners_group with generation 43
+2025-12-27 06:30:22,088 - aiokafka.consumer.group_coordinator - INFO - Setting newly assigned partitions set() for group runners_group
+2025-12-27 06:30:22,088 - app.orchestrator.kafka_client - INFO - Consumer создан для топика 'scenarios', group_id='runners_group'
+2025-12-27 06:30:22,088 - app.runner.kafka_worker - INFO - Worker runner_7e95dfb84567 начал чтение из топика 'scenarios'
+2025-12-27 06:30:25,095 - aiokafka.consumer.group_coordinator - WARNING - Heartbeat failed for group runners_group because it is rebalancing
+2025-12-27 06:30:25,095 - aiokafka.consumer.group_coordinator - INFO - Revoking previously assigned partitions frozenset() for group runners_group
+2025-12-27 06:30:25,095 - aiokafka.consumer.group_coordinator - INFO - (Re-)joining group runners_group
+2025-12-27 06:30:25,102 - aiokafka.consumer.group_coordinator - INFO - Joined group 'runners_group' (generation 44) with member_id aiokafka-0.10.0-93debcc6-6403-434e-85b4-c2aa2c831d8b
+2025-12-27 06:30:25,107 - aiokafka.consumer.group_coordinator - INFO - Successfully synced group runners_group with generation 44
+2025-12-27 06:30:25,107 - aiokafka.consumer.group_coordinator - INFO - Setting newly assigned partitions {TopicPartition(topic='scenarios', partition=0)} for group runners_group
+2025-12-27 06:30:25,112 - app.runner.kafka_worker - INFO - Worker runner_7e95dfb84567 получил задачу для scenario_id=2
+2025-12-27 06:30:25,113 - app.runner.runner - INFO - Runner runner_7e95dfb84567 начинает обработку scenario_id=2
+2025-12-27 06:30:25,113 - app.runner.video_processor - INFO - Чтение кадра 0 из видео: test_videos\video_2025-12-27_04-47-07.mp4
+2025-12-27 06:30:25,113 - app.runner.runner - INFO - Кадр прочитан для scenario_id=2, размер: 10 байт
+2025-12-27 06:30:25,732 - httpx - INFO - HTTP Request: POST http://localhost:8001/predict "HTTP/1.1 200 OK"
+2025-12-27 06:30:25,732 - app.runner.inference_client - INFO - Получены предсказания от Inference: 1 объектов
+2025-12-27 06:30:25,733 - app.runner.runner - INFO - Получены предсказания от Inference для scenario_id=2
+2025-12-27 06:30:25,840 - app.runner.runner - INFO - Предсказания сохранены в БД для scenario_id=2
+2025-12-27 06:30:25,956 - app.runner.runner - INFO - Статус обновлен на ACTIVE для scenario_id=2
+2025-12-27 06:30:25,956 - app.runner.runner - INFO - Runner runner_7e95dfb84567 успешно обработал scenario_id=2
+2025-12-27 06:30:25,956 - app.runner.kafka_worker - INFO - Worker runner_7e95dfb84567 успешно обработал scenario_id=2
+2025-12-27 06:30:25,956 - app.runner.kafka_worker - INFO - Worker runner_7e95dfb84567 получил задачу для scenario_id=2
+2025-12-27 06:30:25,956 - app.runner.runner - INFO - Runner runner_7e95dfb84567 начинает обработку scenario_id=2
+2025-12-27 06:30:25,956 - app.runner.video_processor - INFO - Чтение кадра 0 из видео: test_videos\video_2025-12-27_04-47-07.mp4
+2025-12-27 06:30:25,956 - app.runner.runner - INFO - Кадр прочитан для scenario_id=2, размер: 10 байт
+2025-12-27 06:30:26,541 - httpx - INFO - HTTP Request: POST http://localhost:8001/predict "HTTP/1.1 200 OK"
+2025-12-27 06:30:26,541 - app.runner.inference_client - INFO - Получены предсказания от Inference: 1 объектов
+2025-12-27 06:30:26,541 - app.runner.runner - INFO - Получены предсказания от Inference для scenario_id=2
+2025-12-27 06:30:26,638 - app.runner.runner - INFO - Предсказания сохранены в БД для scenario_id=2
+2025-12-27 06:30:26,740 - app.runner.runner - INFO - Статус обновлен на ACTIVE для scenario_id=2
+2025-12-27 06:30:26,740 - app.runner.runner - INFO - Runner runner_7e95dfb84567 успешно обработал scenario_id=2
+2025-12-27 06:30:26,740 - app.runner.kafka_worker - INFO - Worker runner_7e95dfb84567 успешно обработал scenario_id=2
+2025-12-27 06:30:26,740 - app.runner.kafka_worker - INFO - Worker runner_7e95dfb84567 получил задачу для scenario_id=2
+2025-12-27 06:30:26,740 - app.runner.runner - INFO - Runner runner_7e95dfb84567 начинает обработку scenario_id=2
+2025-12-27 06:30:26,741 - app.runner.video_processor - INFO - Чтение кадра 0 из видео: test_videos\video_2025-12-27_04-47-07.mp4
+2025-12-27 06:30:26,741 - app.runner.runner - INFO - Кадр прочитан для scenario_id=2, размер: 10 байт
+2025-12-27 06:30:27,334 - httpx - INFO - HTTP Request: POST http://localhost:8001/predict "HTTP/1.1 200 OK"
+2025-12-27 06:30:27,334 - app.runner.inference_client - INFO - Получены предсказания от Inference: 4 объектов
+2025-12-27 06:30:27,334 - app.runner.runner - INFO - Получены предсказания от Inference для scenario_id=2
+2025-12-27 06:30:27,418 - app.runner.runner - INFO - Предсказания сохранены в БД для scenario_id=2
+2025-12-27 06:30:27,506 - app.runner.runner - INFO - Статус обновлен на ACTIVE для scenario_id=2
+2025-12-27 06:30:27,506 - app.runner.runner - INFO - Runner runner_7e95dfb84567 успешно обработал scenario_id=2
+2025-12-27 06:30:27,506 - app.runner.kafka_worker - INFO - Worker runner_7e95dfb84567 успешно обработал scenario_id=2
+2025-12-27 06:30:27,506 - app.runner.kafka_worker - INFO - Worker runner_7e95dfb84567 получил задачу для scenario_id=3
+2025-12-27 06:30:27,506 - app.runner.runner - INFO - Runner runner_7e95dfb84567 начинает обработку scenario_id=3
+2025-12-27 06:30:27,507 - app.runner.video_processor - INFO - Чтение кадра 0 из видео: test_videos\video_2025-12-27_04-47-07.mp4
+2025-12-27 06:30:27,507 - app.runner.runner - INFO - Кадр прочитан для scenario_id=3, размер: 10 байт
+2025-12-27 06:30:28,067 - httpx - INFO - HTTP Request: POST http://localhost:8001/predict "HTTP/1.1 200 OK"
+2025-12-27 06:30:28,067 - app.runner.inference_client - INFO - Получены предсказания от Inference: 4 объектов
+2025-12-27 06:30:28,067 - app.runner.runner - INFO - Получены предсказания от Inference для scenario_id=3
+2025-12-27 06:30:28,146 - app.runner.runner - INFO - Предсказания сохранены в БД для scenario_id=3
+2025-12-27 06:30:28,239 - app.runner.runner - INFO - Статус обновлен на ACTIVE для scenario_id=3
+2025-12-27 06:30:28,239 - app.runner.runner - INFO - Runner runner_7e95dfb84567 успешно обработал scenario_id=3
+2025-12-27 06:30:28,239 - app.runner.kafka_worker - INFO - Worker runner_7e95dfb84567 успешно обработал scenario_id=3
+2025-12-27 06:30:28,240 - app.runner.kafka_worker - INFO - Worker runner_7e95dfb84567 получил задачу для scenario_id=2
+2025-12-27 06:30:28,240 - app.runner.runner - INFO - Runner runner_7e95dfb84567 начинает обработку scenario_id=2
+2025-12-27 06:30:28,240 - app.runner.video_processor - INFO - Чтение кадра 0 из видео: test_videos\video_2025-12-27_04-47-07.mp4
+2025-12-27 06:30:28,240 - app.runner.runner - INFO - Кадр прочитан для scenario_id=2, размер: 10 байт
+2025-12-27 06:30:28,870 - httpx - INFO - HTTP Request: POST http://localhost:8001/predict "HTTP/1.1 200 OK"
+2025-12-27 06:30:28,870 - app.runner.inference_client - INFO - Получены предсказания от Inference: 3 объектов
+2025-12-27 06:30:28,871 - app.runner.runner - INFO - Получены предсказания от Inference для scenario_id=2
+2025-12-27 06:30:28,962 - app.runner.runner - INFO - Предсказания сохранены в БД для scenario_id=2
+2025-12-27 06:30:29,051 - app.runner.runner - INFO - Статус обновлен на ACTIVE для scenario_id=2
+2025-12-27 06:30:29,051 - app.runner.runner - INFO - Runner runner_7e95dfb84567 успешно обработал scenario_id=2
+2025-12-27 06:30:29,052 - app.runner.kafka_worker - INFO - Worker runner_7e95dfb84567 успешно обработал scenario_id=2
+2025-12-27 06:30:29,052 - app.runner.kafka_worker - INFO - Worker runner_7e95dfb84567 получил задачу для scenario_id=2
+2025-12-27 06:30:29,052 - app.runner.runner - INFO - Runner runner_7e95dfb84567 начинает обработку scenario_id=2
+2025-12-27 06:30:29,052 - app.runner.video_processor - INFO - Чтение кадра 0 из видео: test_videos\video_2025-12-27_04-47-07.mp4
+2025-12-27 06:30:29,052 - app.runner.runner - INFO - Кадр прочитан для scenario_id=2, размер: 10 байт
+2025-12-27 06:30:29,631 - httpx - INFO - HTTP Request: POST http://localhost:8001/predict "HTTP/1.1 200 OK"
+2025-12-27 06:30:29,633 - app.runner.inference_client - INFO - Получены предсказания от Inference: 1 объектов
+2025-12-27 06:30:29,633 - app.runner.runner - INFO - Получены предсказания от Inference для scenario_id=2
+2025-12-27 06:30:29,719 - app.runner.runner - INFO - Предсказания сохранены в БД для scenario_id=2
+2025-12-27 06:30:29,809 - app.runner.runner - INFO - Статус обновлен на ACTIVE для scenario_id=2
+2025-12-27 06:30:29,809 - app.runner.runner - INFO - Runner runner_7e95dfb84567 успешно обработал scenario_id=2
+2025-12-27 06:30:29,809 - app.runner.kafka_worker - INFO - Worker runner_7e95dfb84567 успешно обработал scenario_id=2
+2025-12-27 06:30:29,809 - app.runner.kafka_worker - INFO - Worker runner_7e95dfb84567 получил задачу для scenario_id=3
+2025-12-27 06:30:29,809 - app.runner.runner - INFO - Runner runner_7e95dfb84567 начинает обработку scenario_id=3
+2025-12-27 06:30:29,809 - app.runner.video_processor - INFO - Чтение кадра 0 из видео: test_videos\video_2025-12-27_04-47-07.mp4
+2025-12-27 06:30:29,809 - app.runner.runner - INFO - Кадр прочитан для scenario_id=3, размер: 10 байт
+2025-12-27 06:30:30,426 - httpx - INFO - HTTP Request: POST http://localhost:8001/predict "HTTP/1.1 200 OK"
+2025-12-27 06:30:30,426 - app.runner.inference_client - INFO - Получены предсказания от Inference: 3 объектов
+2025-12-27 06:30:30,426 - app.runner.runner - INFO - Получены предсказания от Inference для scenario_id=3
+2025-12-27 06:30:30,522 - app.runner.runner - INFO - Предсказания сохранены в БД для scenario_id=3
+2025-12-27 06:30:30,614 - app.runner.runner - INFO - Статус обновлен на ACTIVE для scenario_id=3
+2025-12-27 06:30:30,614 - app.runner.runner - INFO - Runner runner_7e95dfb84567 успешно обработал scenario_id=3
+2025-12-27 06:30:30,614 - app.runner.kafka_worker - INFO - Worker runner_7e95dfb84567 успешно обработал scenario_id=3
+2025-12-27 06:30:30,614 - app.runner.kafka_worker - INFO - Worker runner_7e95dfb84567 получил задачу для scenario_id=4
+2025-12-27 06:30:30,614 - app.runner.runner - INFO - Runner runner_7e95dfb84567 начинает обработку scenario_id=4
+2025-12-27 06:30:30,614 - app.runner.video_processor - INFO - Чтение кадра 0 из видео: test_videos\video_2025-12-27_04-47-07.mp4
+2025-12-27 06:30:30,614 - app.runner.runner - INFO - Кадр прочитан для scenario_id=4, размер: 10 байт
+2025-12-27 06:30:31,188 - httpx - INFO - HTTP Request: POST http://localhost:8001/predict "HTTP/1.1 200 OK"
+2025-12-27 06:30:31,189 - app.runner.inference_client - INFO - Получены предсказания от Inference: 3 объектов
+2025-12-27 06:30:31,189 - app.runner.runner - INFO - Получены предсказания от Inference для scenario_id=4
+2025-12-27 06:30:31,275 - app.runner.runner - INFO - Предсказания сохранены в БД для scenario_id=4
+2025-12-27 06:30:31,368 - app.runner.runner - INFO - Статус обновлен на ACTIVE для scenario_id=4
+2025-12-27 06:30:31,368 - app.runner.runner - INFO - Runner runner_7e95dfb84567 успешно обработал scenario_id=4
+2025-12-27 06:30:31,368 - app.runner.kafka_worker - INFO - Worker runner_7e95dfb84567 успешно обработал scenario_id=4
+2025-12-27 06:30:31,368 - app.runner.kafka_worker - INFO - Worker runner_7e95dfb84567 получил задачу для scenario_id=4
+2025-12-27 06:30:31,368 - app.runner.runner - INFO - Runner runner_7e95dfb84567 начинает обработку scenario_id=4
+2025-12-27 06:30:31,368 - app.runner.video_processor - INFO - Чтение кадра 0 из видео: test_videos\video_2025-12-27_04-47-07.mp4
+2025-12-27 06:30:31,368 - app.runner.runner - INFO - Кадр прочитан для scenario_id=4, размер: 10 байт
+2025-12-27 06:30:31,981 - httpx - INFO - HTTP Request: POST http://localhost:8001/predict "HTTP/1.1 200 OK"
+2025-12-27 06:30:31,982 - app.runner.inference_client - INFO - Получены предсказания от Inference: 1 объектов
+2025-12-27 06:30:31,982 - app.runner.runner - INFO - Получены предсказания от Inference для scenario_id=4
+2025-12-27 06:30:32,080 - app.runner.runner - INFO - Предсказания сохранены в БД для scenario_id=4
+2025-12-27 06:30:32,186 - app.runner.runner - INFO - Статус обновлен на ACTIVE для scenario_id=4
+2025-12-27 06:30:32,186 - app.runner.runner - INFO - Runner runner_7e95dfb84567 успешно обработал scenario_id=4
+2025-12-27 06:30:32,186 - app.runner.kafka_worker - INFO - Worker runner_7e95dfb84567 успешно обработал scenario_id=4
+2025-12-27 06:31:25,913 - aiokafka.consumer.group_coordinator - INFO - LeaveGroup request succeeded
+2025-12-27 06:31:25,914 - app.orchestrator.kafka_client - INFO - Отключение от Kafka завершено
+2025-12-27 06:31:25,914 - app.runner.runner - INFO - Runner runner_7e95dfb84567 остановлен
+2025-12-27 06:31:25,915 - app.orchestrator.kafka_client - INFO - Отключение от Kafka завершено
+2025-12-27 06:31:25,915 - app.runner.kafka_worker - INFO - Worker runner_7e95dfb84567 остановлен
+Подключение к базе данных установлено
+Подключение к базе данных закрыто
+Traceback (most recent call last):
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\asyncio\base_events.py", line 685, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "C:\Users\ноут\Desktop\arch_dz\run_worker.py", line 35, in main
+    await worker.run()
+  File "C:\Users\ноут\Desktop\arch_dz\app\runner\kafka_worker.py", line 94, in run
+    async for msg in consumer:
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\site-packages\aiokafka\consumer\consumer.py", line 1268, in __anext__
+    return (await self.getone())
+            ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\site-packages\aiokafka\consumer\consumer.py", line 1154, in getone
+    msg = await self._fetcher.next_record(partitions)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\site-packages\aiokafka\consumer\fetcher.py", line 1041, in next_record
+    await waiter
+asyncio.exceptions.CancelledError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\ноут\Desktop\arch_dz\run_worker.py", line 43, in <module>
+    asyncio.run(main())
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py", line 194, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\asyncio\runners.py", line 123, in run
+    raise KeyboardInterrupt()
+KeyboardInterrupt

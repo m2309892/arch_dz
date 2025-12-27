@@ -1,0 +1,195 @@
+2025-12-27 06:30:18,665 - __main__ - INFO - Запуск воркера: worker_id=runner_205e5ba86849, video_path=test_videos\video_2025-12-27_04-47-07.mp4
+2025-12-27 06:30:18,665 - app.runner.video_processor - INFO - VideoProcessor инициализирован для файла: test_videos\video_2025-12-27_04-47-07.mp4
+2025-12-27 06:30:18,666 - app.runner.inference_client - INFO - InferenceClient инициализирован, URL: http://localhost:8001
+2025-12-27 06:30:18,666 - app.orchestrator.kafka_client - INFO - KafkaClient инициализирован, bootstrap_servers=None
+2025-12-27 06:30:18,666 - app.runner.runner - INFO - Runner инициализирован: runner_id=runner_205e5ba86849, video_path=test_videos\video_2025-12-27_04-47-07.mp4
+2025-12-27 06:30:18,666 - app.orchestrator.kafka_client - INFO - KafkaClient инициализирован, bootstrap_servers=localhost:9092
+2025-12-27 06:30:18,667 - app.runner.kafka_worker - INFO - KafkaWorker инициализирован: worker_id=runner_205e5ba86849
+2025-12-27 06:30:18,820 - app.orchestrator.kafka_client - INFO - Подключение к Kafka установлено
+2025-12-27 06:30:18,878 - app.orchestrator.kafka_client - INFO - Подключение к Kafka установлено
+2025-12-27 06:30:18,878 - app.runner.runner - INFO - Runner runner_205e5ba86849 запущен
+2025-12-27 06:30:18,878 - app.runner.kafka_worker - INFO - Worker runner_205e5ba86849 запущен
+2025-12-27 06:30:18,879 - aiokafka.consumer.subscription_state - INFO - Updating subscribed topics to: frozenset({'scenarios'})
+2025-12-27 06:30:18,953 - aiokafka.consumer.group_coordinator - INFO - Discovered coordinator 1 for group runners_group
+2025-12-27 06:30:18,953 - aiokafka.consumer.group_coordinator - INFO - Revoking previously assigned partitions set() for group runners_group
+2025-12-27 06:30:18,953 - aiokafka.consumer.group_coordinator - INFO - (Re-)joining group runners_group
+2025-12-27 06:30:22,080 - aiokafka.consumer.group_coordinator - INFO - Joined group 'runners_group' (generation 43) with member_id aiokafka-0.10.0-0ffccdee-2b00-4d28-846a-0d48200ed4bf
+2025-12-27 06:30:22,086 - aiokafka.consumer.group_coordinator - INFO - Successfully synced group runners_group with generation 43
+2025-12-27 06:30:22,087 - aiokafka.consumer.group_coordinator - INFO - Setting newly assigned partitions {TopicPartition(topic='scenarios', partition=0)} for group runners_group
+2025-12-27 06:30:22,087 - app.orchestrator.kafka_client - INFO - Consumer создан для топика 'scenarios', group_id='runners_group'
+2025-12-27 06:30:22,087 - app.runner.kafka_worker - INFO - Worker runner_205e5ba86849 начал чтение из топика 'scenarios'
+2025-12-27 06:30:22,096 - app.runner.kafka_worker - INFO - Worker runner_205e5ba86849 получил задачу для scenario_id=1
+2025-12-27 06:30:22,096 - app.runner.runner - INFO - Runner runner_205e5ba86849 начинает обработку scenario_id=1
+2025-12-27 06:30:22,096 - app.runner.video_processor - INFO - Чтение кадра 0 из видео: test_videos\video_2025-12-27_04-47-07.mp4
+2025-12-27 06:30:22,096 - app.runner.runner - INFO - Кадр прочитан для scenario_id=1, размер: 10 байт
+2025-12-27 06:30:22,737 - httpx - INFO - HTTP Request: POST http://localhost:8001/predict "HTTP/1.1 200 OK"
+2025-12-27 06:30:22,738 - app.runner.inference_client - INFO - Получены предсказания от Inference: 2 объектов
+2025-12-27 06:30:22,738 - app.runner.runner - INFO - Получены предсказания от Inference для scenario_id=1
+2025-12-27 06:30:22,834 - app.runner.runner - INFO - Предсказания сохранены в БД для scenario_id=1
+2025-12-27 06:30:22,939 - app.runner.runner - INFO - Статус обновлен на ACTIVE для scenario_id=1
+2025-12-27 06:30:22,939 - app.runner.runner - INFO - Runner runner_205e5ba86849 успешно обработал scenario_id=1
+2025-12-27 06:30:22,939 - app.runner.kafka_worker - INFO - Worker runner_205e5ba86849 успешно обработал scenario_id=1
+2025-12-27 06:30:22,939 - app.runner.kafka_worker - INFO - Worker runner_205e5ba86849 получил задачу для scenario_id=1
+2025-12-27 06:30:22,939 - app.runner.runner - INFO - Runner runner_205e5ba86849 начинает обработку scenario_id=1
+2025-12-27 06:30:22,939 - app.runner.video_processor - INFO - Чтение кадра 0 из видео: test_videos\video_2025-12-27_04-47-07.mp4
+2025-12-27 06:30:22,939 - app.runner.runner - INFO - Кадр прочитан для scenario_id=1, размер: 10 байт
+2025-12-27 06:30:23,888 - app.runner.inference_client - ERROR - Ошибка при обращении к Inference сервису: 
+Traceback (most recent call last):
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpx\_transports\default.py", line 66, in map_httpcore_exceptions
+    yield
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpx\_transports\default.py", line 366, in handle_async_request
+    resp = await self._pool.handle_async_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpcore\_async\connection_pool.py", line 216, in handle_async_request
+    raise exc from None
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpcore\_async\connection_pool.py", line 196, in handle_async_request
+    response = await connection.handle_async_request(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpcore\_async\connection.py", line 101, in handle_async_request
+    return await self._connection.handle_async_request(request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpcore\_async\http11.py", line 143, in handle_async_request
+    raise exc
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpcore\_async\http11.py", line 113, in handle_async_request
+    ) = await self._receive_response_headers(**kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpcore\_async\http11.py", line 186, in _receive_response_headers
+    event = await self._receive_event(timeout=timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpcore\_async\http11.py", line 224, in _receive_event
+    data = await self._network_stream.read(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpcore\_backends\anyio.py", line 32, in read
+    with map_exceptions(exc_map):
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpcore\_exceptions.py", line 14, in map_exceptions
+    raise to_exc(exc) from exc
+httpcore.ReadError
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\ноут\Desktop\arch_dz\app\runner\inference_client.py", line 43, in predict
+    response = await client.post(
+               ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpx\_client.py", line 1848, in post
+    return await self.request(
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpx\_client.py", line 1530, in request
+    return await self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpx\_client.py", line 1617, in send
+    response = await self._send_handling_auth(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpx\_client.py", line 1645, in _send_handling_auth
+    response = await self._send_handling_redirects(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpx\_client.py", line 1682, in _send_handling_redirects
+    response = await self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpx\_client.py", line 1719, in _send_single_request
+    response = await transport.handle_async_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpx\_transports\default.py", line 365, in handle_async_request
+    with map_httpcore_exceptions():
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpx\_transports\default.py", line 83, in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+httpx.ReadError
+2025-12-27 06:30:23,983 - app.runner.runner - ERROR - Ошибка при обращении к Inference для scenario_id=1: Ошибка при обращении к Inference сервису: 
+2025-12-27 06:30:24,093 - app.orchestrator.kafka_client - WARNING - Отправка в retry топик для scenario_id=1, причина: inference_error: Ошибка при обращении к Inference сервису: 
+2025-12-27 06:30:24,093 - app.orchestrator.kafka_client - INFO - Отправка сообщения в Kafka: topic=retry_topic, key=1
+2025-12-27 06:30:24,093 - app.orchestrator.kafka_client - ERROR - \u2717 Неожиданная ошибка при отправке сообщения в топик 'retry_topic': 'bool' object has no attribute 'is_set'
+Traceback (most recent call last):
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpx\_transports\default.py", line 66, in map_httpcore_exceptions
+    yield
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpx\_transports\default.py", line 366, in handle_async_request
+    resp = await self._pool.handle_async_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpcore\_async\connection_pool.py", line 216, in handle_async_request
+    raise exc from None
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpcore\_async\connection_pool.py", line 196, in handle_async_request
+    response = await connection.handle_async_request(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpcore\_async\connection.py", line 101, in handle_async_request
+    return await self._connection.handle_async_request(request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpcore\_async\http11.py", line 143, in handle_async_request
+    raise exc
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpcore\_async\http11.py", line 113, in handle_async_request
+    ) = await self._receive_response_headers(**kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpcore\_async\http11.py", line 186, in _receive_response_headers
+    event = await self._receive_event(timeout=timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpcore\_async\http11.py", line 224, in _receive_event
+    data = await self._network_stream.read(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpcore\_backends\anyio.py", line 32, in read
+    with map_exceptions(exc_map):
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpcore\_exceptions.py", line 14, in map_exceptions
+    raise to_exc(exc) from exc
+httpcore.ReadError
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\ноут\Desktop\arch_dz\app\runner\inference_client.py", line 43, in predict
+    response = await client.post(
+               ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpx\_client.py", line 1848, in post
+    return await self.request(
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpx\_client.py", line 1530, in request
+    return await self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpx\_client.py", line 1617, in send
+    response = await self._send_handling_auth(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpx\_client.py", line 1645, in _send_handling_auth
+    response = await self._send_handling_redirects(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpx\_client.py", line 1682, in _send_handling_redirects
+    response = await self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpx\_client.py", line 1719, in _send_single_request
+    response = await transport.handle_async_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpx\_transports\default.py", line 365, in handle_async_request
+    with map_httpcore_exceptions():
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "C:\Users\ноут\AppData\Local\Programs\Python\Python312\Lib\site-packages\httpx\_transports\default.py", line 83, in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+httpx.ReadError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\ноут\Desktop\arch_dz\app\runner\runner.py", line 86, in process_scenario
+    predictions = await self.inference_client.predict(frame)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ноут\Desktop\arch_dz\app\runner\inference_client.py", line 66, in predict
+    raise Exception(f"Ошибка при обращении к Inference сервису: {str(e)}")
+Exception: Ошибка при обращении к Inference сервису: 
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\ноут\Desktop\arch_dz\app\orchestrator\kafka_client.py", line 116, in send_message
+    if hasattr(self.producer, '_closed') and self.producer._closed.is_set():
+                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'bool' object has no attribute 'is_set'
+2025-12-27 06:30:24,096 - app.runner.runner - WARNING - Ошибка обработана, событие отправлено в retry топик: scenario_id=1, reason=inference_error: Ошибка при обращении к Inference сервису: 
+2025-12-27 06:30:24,096 - app.runner.kafka_worker - WARNING - Worker runner_205e5ba86849 не смог обработать scenario_id=1
+2025-12-27 06:30:24,108 - aiokafka.consumer.group_coordinator - INFO - LeaveGroup request succeeded
+2025-12-27 06:30:24,108 - app.orchestrator.kafka_client - INFO - Отключение от Kafka завершено
+2025-12-27 06:30:24,109 - app.runner.runner - INFO - Runner runner_205e5ba86849 остановлен
+2025-12-27 06:30:24,109 - app.orchestrator.kafka_client - INFO - Отключение от Kafka завершено
+2025-12-27 06:30:24,109 - app.runner.kafka_worker - INFO - Worker runner_205e5ba86849 остановлен
+Подключение к базе данных установлено
+Подключение к базе данных закрыто
