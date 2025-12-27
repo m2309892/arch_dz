@@ -38,3 +38,9 @@ wheels/
 .DS_Store
 Thumbs.db
 
+# Test videos (для тестирования, но не коммитим в репозиторий)
+test_videos/*.mp4
+test_videos/*.avi
+test_videos/*.mov
+!test_videos/.gitkeep
+

@@ -245,19 +245,33 @@ class Orchestrator:
     
     async def _retry_consumer_loop(self):
         """Основной цикл чтения retry топика."""
-        # Подписываемся на retry топик
-        await self.kafka_client.consume_retry_topic(callback=self._handle_retry_message)
+        consumer = None
+        stop_event = asyncio.Event()
         
-        # В реальной реализации здесь будет бесконечный цикл чтения из Kafka
-        # Пока это заглушка - просто проверяем периодически
-        while self._running:
-            try:
-                # TODO: В реальной реализации здесь будет чтение из Kafka consumer
-                # Пока это заглушка - просто ждем
-                await asyncio.sleep(1)
-            except Exception as e:
-                logger.error(f"Ошибка в цикле чтения retry топика: {e}", exc_info=True)
-                await asyncio.sleep(1)
+        try:
+            # Создаем consumer для retry топика
+            consumer = await self.kafka_client.create_consumer(
+                topic=self.kafka_client.retry_topic,
+                group_id="orchestrator_retry_consumer"
+            )
+            
+            logger.info(f"Начато чтение из retry топика: {self.kafka_client.retry_topic}")
+            
+            # Читаем сообщения из retry топика
+            async for msg in consumer:
+                if not self._running:
+                    break
+                
+                try:
+                    message_value = msg.value
+                    await self._handle_retry_message(message_value)
+                except Exception as e:
+                    logger.error(f"Ошибка при обработке сообщения из retry топика: {e}", exc_info=True)
+        except Exception as e:
+            logger.error(f"Ошибка в цикле чтения retry топика: {e}", exc_info=True)
+        finally:
+            if consumer:
+                await consumer.stop()
     
     async def _handle_retry_message(self, message: dict):
         """

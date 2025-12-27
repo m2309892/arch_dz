@@ -230,6 +230,54 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 }
 ```
 
+## Запуск Kafka
+
+Для работы системы требуется Kafka. Запустите Kafka через Docker Compose:
+
+```bash
+# Запуск Kafka, Zookeeper и Kafka UI
+docker-compose up -d
+
+# Проверка статуса
+docker-compose ps
+
+# Просмотр логов
+docker-compose logs -f kafka
+
+# Остановка
+docker-compose down
+```
+
+После запуска Kafka будет доступна на `localhost:9092`, а Kafka UI - на `http://localhost:8080`
+
+## Запуск раннеров (воркеров)
+
+Раннеры должны запускаться отдельно и читать задачи из Kafka:
+
+```bash
+# Запуск одного воркера
+python run_worker.py [worker_id] [video_path]
+
+# Например:
+python run_worker.py worker_1 test_videos/test_video.mp4
+
+# Для запуска нескольких воркеров (в разных терминалах):
+python run_worker.py worker_1 test_videos/test_video.mp4
+python run_worker.py worker_2 test_videos/test_video.mp4
+python run_worker.py worker_3 test_videos/test_video.mp4
+```
+
+## Архитектура работы с Kafka
+
+1. **Топик `scenarios`** - основной топик для событий сценариев:
+   - Оркестратор отправляет события в этот топик
+   - Раннеры читают из этого топика (кто свободен - тот берет задачу)
+   - Группа consumer: `runners_group`
+
+2. **Топик `retry_topic`** - топик для повторной обработки:
+   - Раннеры отправляют события в этот топик при ошибках
+   - Оркестратор читает из этого топика и перезапускает сценарии
+
 ## Технологии
 
 - **FastAPI** - современный веб-фреймворк для создания API
@@ -238,3 +286,5 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 - **Alembic** - система миграций базы данных
 - **Pydantic** - валидация данных и схемы
 - **Uvicorn** - ASGI сервер
+- **Kafka** - распределенная система обмена сообщениями
+- **aiokafka** - асинхронный клиент для Kafka
