@@ -1,4 +1,4 @@
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update
@@ -64,6 +64,22 @@ class ScenarioCRUD:
             result = await session.execute(stmt)
             scenario = result.scalar_one_or_none()
             return scenario
+
+    @staticmethod
+    async def get_scenarios_by_status(
+        status: ScenarioStatus,
+        limit: int = 10,
+    ) -> List[Scenario]:
+        status_value = status.value if isinstance(status, ScenarioStatus) else status
+        async with db.get_session() as session:
+            stmt = (
+                select(Scenario)
+                .where(Scenario.status == status_value)
+                .order_by(Scenario.id)
+                .limit(limit)
+            )
+            result = await session.execute(stmt)
+            return list(result.scalars().all())
     
     @staticmethod
     async def update_predict(

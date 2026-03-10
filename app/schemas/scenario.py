@@ -1,32 +1,19 @@
-"""Схемы для работы со сценариями."""
-
 from datetime import datetime
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 
 from pydantic import BaseModel, Field
 from app.db.models import ScenarioStatus
 
 
 class ScenarioCreate(BaseModel):
-    """Схема для создания сценария."""
-    
-    status: Optional[ScenarioStatus] = Field(
-        default=ScenarioStatus.INIT_STARTUP,
-        description="Начальный статус сценария"
-    )
+    status: Optional[ScenarioStatus] = Field(default=ScenarioStatus.INIT_STARTUP)
 
 
 class ScenarioUpdate(BaseModel):
-    """Схема для обновления статуса сценария."""
-    
-    status: ScenarioStatus = Field(
-        description="Новый статус сценария"
-    )
+    status: ScenarioStatus
 
 
 class ScenarioResponse(BaseModel):
-    """Схема ответа с информацией о сценарии."""
-    
     id: int
     status: ScenarioStatus
     created_at: datetime
@@ -37,8 +24,6 @@ class ScenarioResponse(BaseModel):
 
 
 class ScenarioStatusResponse(BaseModel):
-    """Схема ответа со статусом сценария."""
-    
     id: int
     status: ScenarioStatus
     
@@ -47,11 +32,6 @@ class ScenarioStatusResponse(BaseModel):
 
 
 class PredictionResponse(BaseModel):
-    """Схема ответа с предсказаниями."""
-    
     scenario_id: int
-    predictions: Optional[Dict[str, Any]] = Field(
-        default=None,
-        description="Результаты предсказаний"
-    )
+    predictions: Optional[List[Dict[str, Any]]] = Field(default=None)
 

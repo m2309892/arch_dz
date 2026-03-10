@@ -16,15 +16,10 @@ class KafkaWorker:
         video_path: str,
         scenarios_topic: str = "scenarios",
         group_id: str = "runners_group",
-        bootstrap_servers: str = "localhost:9092",
-        inference_url: str = "http://localhost:8001"
+        bootstrap_servers: Optional[str] = None,
     ):
         self.worker_id = worker_id
-        self.runner = Runner(
-            runner_id=worker_id,
-            video_path=video_path,
-            inference_url=inference_url
-        )
+        self.runner = Runner(runner_id=worker_id, video_path=video_path)
         self.kafka_client = KafkaClient(
             bootstrap_servers=bootstrap_servers,
             scenarios_topic=scenarios_topic
@@ -66,10 +61,10 @@ class KafkaWorker:
         try:
             consumer = await self.kafka_client.create_consumer(
                 topic=self.scenarios_topic,
-                group_id=self.group_id
+                group_id=self.group_id,
+                enable_auto_commit=False,
             )
-            
-            logger.info(f"Worker {self.worker_id} начал чтение из топика '{self.scenarios_topic}'")
+            logger.info(f"Worker {self.worker_id} начал чтение из топика '{self.scenarios_topic}' (manual commit)")
             
             async for msg in consumer:
                 if stop_event.is_set():
@@ -77,28 +72,35 @@ class KafkaWorker:
                 
                 try:
                     message_value = msg.value
-                    
-                    if message_value.get("type") == "__init__":
+                    if not isinstance(message_value, dict):
+                        logger.warning("Сообщение не dict, пропущено: %s", type(message_value))
+                        await consumer.commit()
                         continue
-                    
+                    if message_value.get("type") == "__init__":
+                        await consumer.commit()
+                        continue
                     scenario_id = message_value.get("scenario_id")
-                    
                     if not scenario_id:
                         logger.warning(f"Сообщение без scenario_id пропущено: {message_value}")
+                        await consumer.commit()
                         continue
                     
                     logger.info(f"Worker {self.worker_id} получил задачу для scenario_id={scenario_id}")
-                    
                     success = await self.runner.process_scenario(scenario_id)
                     
                     if success:
                         logger.info(f"Worker {self.worker_id} успешно обработал scenario_id={scenario_id}")
+                        await consumer.commit()
                     else:
                         logger.warning(f"Worker {self.worker_id} не смог обработать scenario_id={scenario_id}")
+                        await consumer.commit()
                         break
                         
                 except Exception as e:
-                    logger.error(f"Ошибка при обработке сообщения в worker {self.worker_id}: {e}", exc_info=True)
+                    logger.error(
+                        "Ошибка при обработке сообщения в worker %s: %s",
+                        self.worker_id, e, exc_info=True
+                    )
                     break
             
         except Exception as e:

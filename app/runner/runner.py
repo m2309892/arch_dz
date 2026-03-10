@@ -1,10 +1,7 @@
-import asyncio
 import logging
-from typing import Optional, Dict, Any
-from pathlib import Path
 
 from app.runner.video_processor import VideoProcessor, DEFAULT_TEST_VIDEO_PATH
-from app.runner.inference_client import InferenceClient
+from app.runner.mock_inference import MockInference
 from app.db import scenario_crud, ScenarioStatus
 from app.orchestrator.kafka_client import KafkaClient
 
@@ -16,15 +13,14 @@ class Runner:
         self,
         runner_id: str,
         video_path: str = DEFAULT_TEST_VIDEO_PATH,
-        inference_url: str = "http://localhost:8001"
     ):
         self.runner_id = runner_id
         self.video_processor = VideoProcessor(video_path)
-        self.inference_client = InferenceClient(inference_url)
+        self.inference = MockInference()
         self.kafka_client = KafkaClient()
         self._running = False
-        
-        logger.info(f"Runner инициализирован: runner_id={runner_id}, video_path={video_path}")
+
+        logger.info("Runner инициализирован: runner_id=%s, video_path=%s", runner_id, video_path)
     
     async def start(self):
         if self._running:
@@ -56,10 +52,10 @@ class Runner:
             logger.info(f"Кадр прочитан для scenario_id={scenario_id}, размер: {len(frame)} байт")
             
             try:
-                predictions = await self.inference_client.predict(frame)
-                logger.info(f"Получены предсказания от Inference для scenario_id={scenario_id}")
+                predictions = await self.inference.predict(frame)
+                logger.info("Получены предсказания от MockInference для scenario_id=%s", scenario_id)
             except Exception as e:
-                logger.error(f"Ошибка при обращении к Inference для scenario_id={scenario_id}: {e}")
+                logger.error("Ошибка inference для scenario_id=%s: %s", scenario_id, e)
                 await self._handle_error(scenario_id, f"inference_error: {str(e)}")
                 return False
             
@@ -83,6 +79,17 @@ class Runner:
             except Exception as e:
                 logger.error(f"Ошибка при обновлении статуса для scenario_id={scenario_id}: {e}")
                 await self._handle_error(scenario_id, f"status_update_error: {str(e)}")
+                return False
+
+            try:
+                await scenario_crud.update_status(
+                    scenario_id=scenario_id,
+                    status=ScenarioStatus.INACTIVE
+                )
+                logger.info(f"Обработка завершена, статус INACTIVE для scenario_id={scenario_id}")
+            except Exception as e:
+                logger.error(f"Ошибка при установке INACTIVE для scenario_id={scenario_id}: {e}")
+                await self._handle_error(scenario_id, f"status_inactive_error: {str(e)}")
                 return False
             
             logger.info(f"Runner {self.runner_id} успешно обработал scenario_id={scenario_id}")

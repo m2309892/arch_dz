@@ -38,7 +38,7 @@ class Scenario(Base):
             'in_shutdown_processing',
             'inactive',
             name="scenario_status",
-            create_type=False
+            create_type=True
         ),
         default='init_startup'
     )

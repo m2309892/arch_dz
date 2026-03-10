@@ -1,5 +1,3 @@
-"""Pydantic схемы для API."""
-
 from app.schemas.scenario import (
     ScenarioCreate,
     ScenarioUpdate,

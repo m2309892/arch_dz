@@ -1,5 +1,6 @@
-import os
 import asyncio
+import logging
+import os
 from dotenv import load_dotenv
 
 from sqlalchemy.ext.asyncio import (
@@ -8,9 +9,9 @@ from sqlalchemy.ext.asyncio import (
     async_sessionmaker,
     AsyncEngine
 )
-from sqlalchemy.pool import NullPool
 
 load_dotenv()
+logger = logging.getLogger(__name__)
 
 
 class Database:
@@ -22,9 +23,10 @@ class Database:
     async def connect(self):
         database_url = os.getenv(
             "DATABASE_URL",
-            "postgresql://postgres:postgres@localhost:5432/video_analytics"
+            "postgresql://postgres:postgres@127.0.0.1:5432/video_analytics"
         )
-        
+        if "@localhost:" in database_url:
+            database_url = database_url.replace("@localhost:", "@127.0.0.1:")
         if database_url.startswith("postgresql://"):
             database_url = database_url.replace(
                 "postgresql://",
@@ -35,7 +37,9 @@ class Database:
         self.engine = create_async_engine(
             database_url,
             echo=False,
-            poolclass=NullPool,
+            pool_size=5,
+            max_overflow=10,
+            pool_pre_ping=True,
         )
         
         self.session_maker = async_sessionmaker(
@@ -46,7 +50,36 @@ class Database:
             autocommit=False
         )
         print("Подключение к базе данных установлено")
-    
+
+    async def warmup(
+        self,
+        initial_delay: float = 3.0,
+        retries: int = 15,
+        delay: float = 2.0,
+    ) -> None:
+        from sqlalchemy import text
+
+        await asyncio.sleep(initial_delay)
+        last_err = None
+        for attempt in range(retries):
+            try:
+                async with self.engine.begin() as conn:
+                    await conn.execute(text("SELECT 1"))
+                logger.info("БД warmup успешен")
+                return
+            except Exception as e:
+                last_err = e
+                logger.warning(
+                    "БД warmup попытка %d/%d: %s. Пауза %.1f с...",
+                    attempt + 1,
+                    retries,
+                    e,
+                    delay,
+                )
+                if attempt < retries - 1:
+                    await asyncio.sleep(delay)
+        raise last_err
+
     async def disconnect(self):
         if self.engine:
             try:

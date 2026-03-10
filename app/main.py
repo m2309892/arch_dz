@@ -40,7 +40,9 @@ async def lifespan(app: FastAPI):
     
     logger.info("Запуск приложения...")
     await db.connect()
-    
+    await db.warmup()
+    await db.create_tables()
+
     video_path = _get_video_path()
     logger.info(f"Используется видеофайл: {video_path}")
     

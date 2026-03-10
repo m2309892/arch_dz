@@ -29,7 +29,7 @@ class KafkaClient:
         self.consumer: Optional[AIOKafkaConsumer] = None
         
         self.connected = False
-        logger.info(f"KafkaClient инициализирован, bootstrap_servers={bootstrap_servers}")
+        logger.info("KafkaClient инициализирован, bootstrap_servers=%s", self.bootstrap_servers)
     
     async def connect(self):
         try:
@@ -139,7 +139,8 @@ class KafkaClient:
         self,
         topic: str,
         group_id: str,
-        auto_offset_reset: str = "earliest"
+        auto_offset_reset: str = "earliest",
+        enable_auto_commit: bool = True,
     ) -> AIOKafkaConsumer:
         consumer = AIOKafkaConsumer(
             topic,
@@ -148,10 +149,13 @@ class KafkaClient:
             value_deserializer=lambda m: json.loads(m.decode('utf-8')),
             key_deserializer=lambda k: k.decode('utf-8') if k else None,
             auto_offset_reset=auto_offset_reset,
-            enable_auto_commit=True
+            enable_auto_commit=enable_auto_commit,
         )
         await consumer.start()
-        logger.info(f"Consumer создан для топика '{topic}', group_id='{group_id}'")
+        logger.info(
+            "Consumer создан для топика '%s', group_id='%s', enable_auto_commit=%s",
+            topic, group_id, enable_auto_commit,
+        )
         return consumer
     
     async def consume_messages(
